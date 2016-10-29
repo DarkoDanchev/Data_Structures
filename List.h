@@ -328,5 +328,6 @@ template <typename T>
 List<T>::~List()
 {
     this->empty();
+	this->init();
 }
 
