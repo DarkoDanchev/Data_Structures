@@ -85,7 +85,7 @@ List<T>& List<T>::operator=(const List<T>& lst)
     if(this != &lst)
     {
         this->empty();
-
+        this->init();
         this->copy(lst);
     }
 
