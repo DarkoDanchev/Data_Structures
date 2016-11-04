@@ -29,7 +29,7 @@ public:
     T top() const;
     void push(const T& element);
     void pop();
-    void print();
+
 
     ~stack();
 
@@ -55,7 +55,7 @@ stack<T>::stack(const stack& st)
     this->copy(st);
 }
 template <typename T>
-stack<T>& stack<T>::operator=(const stack& st) //to be finished later
+stack<T>& stack<T>::operator=(const stack& st)
 {
     if(this != &st)
     {
@@ -93,16 +93,7 @@ void stack<T>::pop()
         this->counter--;
     }
 }
-//for testing purposes[later to be removed]
-template <typename T>
-void stack<T>::print()
-{
-    for(size_t i = 0; i <= this->counter; i++)
-    {
-        cout<<this->top()<<endl;
-        this->pop();
-    }
-}
+
 template <typename T>
 size_t stack<T>::size() const
 {
