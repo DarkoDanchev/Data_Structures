@@ -238,6 +238,13 @@ void Graph<T>::removeEdge(int index)
 template <typename T>
 bool Graph<T>::areConnected(Vertex<T> first,Vertex<T> second) const
 {
+    for(size_t i = 0; i < this->edges_count; i++)
+    {
+        if(edges[i].first == first && edges[i].second == second)
+            return true;
+    }
 
+    return false;
 }
+
 
