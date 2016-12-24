@@ -1,0 +1,243 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+template <typename T>
+struct Vertex
+{
+    T data;
+    Vertex<T>* neighbors;
+
+    bool marked;
+
+    Vertex(const T& dt,Vertex<T>* nb)
+    {
+        data = dt;
+        neighbors = nb;
+        marked = false;
+    }
+
+    void setMarked()
+    {
+        marked = true;
+    }
+};
+template <typename T>
+struct Edge
+{
+    Vertex<T> first;
+    Vertex<T> second;
+
+    Edge(Vertex<T> ft,Vertex<T> snd)
+    {
+        first = ft;
+        second = snd;
+    }
+};
+
+template <typename T>
+class Graph
+{
+private:
+    vector< Vertex<T> > vertices;
+    vector < Edge<T> > edges;
+    size_t vertices_count;
+    size_t edges_count;
+
+    void copy(const Graph<T>&);
+    void empty();
+    void addEdge(const Vertex<T>&,const Vertex<T>&);
+public:
+    Graph();
+    Graph(const Graph&);
+    Graph& operator=(const Graph&);
+
+    void addVertex(Vertex<T>);
+    void addNeighborVertex(int vertexIndex,const Vertex<T>&);
+    int getVertexIndex(const Vertex<T>&) const;
+    int getEdgeIndex(const Edge<T>&) const;
+    Vertex<T> getVertex(int index) const;
+    Edge<T> getEdge(int index) const;
+    vector< Edge<T> > findEdgeByVertex(const Vertex<T>&);
+    void removeVertex(int index);
+    void removeEdge(int index);
+    bool areConnected(Vertex<T>,Vertex<T>) const;
+
+    //the getters
+    vector< Vertex<T> > getVertices() const;
+    vector< Edge<T> > getEdges() const;
+    size_t get_vertices_count() const;
+    size_t get_edges_count() const;
+
+};
+//the basic getters of the class
+template <typename T>
+vector < Vertex<T> > Graph<T>::getVertices() const
+{
+    return this->vertices;
+}
+template <typename T>
+vector < Edge<T> > Graph<T>::getEdges() const
+{
+    return this->edges;
+}
+template <typename T>
+size_t Graph<T>::get_vertices_count() const
+{
+    return this->vertices_count;
+}
+template <typename T>
+size_t Graph<T>::get_edges_count() const
+{
+    return this->edges_count;
+}
+//the private methods of the graph
+template <typename T>
+void Graph<T>::copy(const Graph<T>& graph)
+{
+    this->vertices = graph.getVertices();
+    this->edges = graph.getEdges();
+    this->vertices_count = graph.get_vertices_count();
+    this->edges_count = graph.get_edges_count();
+}
+template <typename T>
+void Graph<T>::empty()
+{
+
+    for(size_t i = 0; i < this->vertices_count; i++)
+        this->vertices.pop_front();
+
+    for(size_t i = 0; i < this->edges_count; i++)
+        this->edges.pop_front();
+
+    this->vertices_count = 0;
+    this->edges_count = 0;
+}
+//the constructors
+template <typename T>
+Graph<T>::Graph()
+{
+    this->vertices = new vector< Vertex<T> >(0);
+    this->edges = new vector< Edge<T> >(0);
+    this->vertices_count = 0;
+    this->edges_count = 0;
+}
+template <typename T>
+Graph<T>::Graph(const Graph& graph)
+{
+    this->copy(graph);
+}
+template <typename T>
+Graph<T>& Graph<T>::operator=(const Graph& graph)
+{
+    if(*this != &graph)
+    {
+        this->empty();
+        this->copy(graph);
+    }
+
+    return *this;
+}
+
+//the graph core functions
+template <typename T>
+void Graph<T>::addVertex(Vertex<T> vertex)
+{
+    this->vertices.push_back(vertex);
+    this->vertices_count++;
+}
+template <typename T>
+void Graph<T>::addNeighborVertex(int vertexIndex,const Vertex<T>& vertex)
+{
+    this->vertices.push_back(vertex);
+
+    this->vertices[vertexIndex].neighbors.push_back(vertex);
+
+    vertex.neighbors.push_back(this->vertices[vertexIndex]);
+
+    Edge<T> newEdge = Edge<T>(this->vertices[vertexIndex],vertex);
+
+    this->edges.push_back(newEdge);
+
+    this->vertices_count++;
+    this->edges_count++;
+}
+template <typename T>
+void Graph<T>::addEdge(const Vertex<T>& first,const Vertex<T>& second)
+{
+    Edge<T> edge = Edge<T>(first,second);
+
+    first.neighbors.push_back(second);
+    second.neighbors.push_back(first);
+
+    this->edges.push_back(edge);
+
+    this->edges_count++;
+}
+
+template <typename T>
+int Graph<T>::getVertexIndex(const Vertex<T>& vertex) const
+{
+    for(int i = 0; i < this->vertices_count; i++)
+    {
+        if(this->vertices[i] == vertex)
+            return i;
+    }
+
+    return -1;
+}
+template <typename T>
+int Graph<T>::getEdgeIndex(const Edge<T>& edge) const
+{
+    for(int i = 0; i < this->edges_count; i++)
+    {
+        if(this->edges[i] == edge)
+            return i;
+    }
+
+    return -1;
+}
+template <typename T>
+Vertex<T> Graph<T>::getVertex(int index) const
+{
+    return this->vertices[index];
+}
+template <typename T>
+Edge<T> Graph<T>::getEdge(int index) const
+{
+    return this->edges[index];
+}
+template <typename T>
+vector < Edge<T> > Graph<T>::findEdgeByVertex(const Vertex<T>& vertex)
+{
+    vector < Edge<T> > all;
+    for(int i = 0; i < this->edges_count; i++)
+    {
+        if(vertex == this->edges[i].first || vertex == this->edges[i].second)
+        {
+            all.push_back(edges[i]);
+        }
+    }
+
+    return all;
+}
+template <typename T>
+void Graph<T>::removeVertex(int index)
+{
+    //vector<Vertex<T> >::iterator it = vertices.begin();
+    this->vertices.erase(vertices.begin() + index);
+    this->vertices_count--;
+}
+template <typename T>
+void Graph<T>::removeEdge(int index)
+{
+    this->edges.erase(edges.begin() + index);
+    this->edges_count--;
+}
+template <typename T>
+bool Graph<T>::areConnected(Vertex<T> first,Vertex<T> second) const
+{
+
+}
+
