@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -7,11 +8,13 @@ template <typename T>
 struct Vertex
 {
     T data;
-    Vertex<T>* neighbors;
+    vector< Vertex<T> > neighbors;
 
     bool marked;
 
-    Vertex(const T& dt,Vertex<T>* nb)
+    Vertex() {}
+
+    Vertex(const T& dt,vector< Vertex<T> > nb)
     {
         data = dt;
         neighbors = nb;
@@ -28,6 +31,9 @@ struct Edge
 {
     Vertex<T> first;
     Vertex<T> second;
+
+
+   // Edge() {}
 
     Edge(Vertex<T> ft,Vertex<T> snd)
     {
@@ -47,14 +53,14 @@ private:
 
     void copy(const Graph<T>&);
     void empty();
-    void addEdge(const Vertex<T>&,const Vertex<T>&);
+  //  void addEdge(const Vertex<T>&,const Vertex<T>&);
 public:
     Graph();
     Graph(const Graph&);
     Graph& operator=(const Graph&);
 
     void addVertex(Vertex<T>);
-    void addNeighborVertex(int vertexIndex,const Vertex<T>&);
+    void addNeighborVertex(int vertexIndex,Vertex<T>);
     int getVertexIndex(const Vertex<T>&) const;
     int getEdgeIndex(const Edge<T>&) const;
     Vertex<T> getVertex(int index) const;
@@ -62,6 +68,7 @@ public:
     vector< Edge<T> > findEdgeByVertex(const Vertex<T>&);
     void removeVertex(int index);
     void removeEdge(int index);
+    void addEdge(Vertex<T>&,Vertex<T>&);
     bool areConnected(Vertex<T>,Vertex<T>) const;
 
     //the getters
@@ -69,6 +76,9 @@ public:
     vector< Edge<T> > getEdges() const;
     size_t get_vertices_count() const;
     size_t get_edges_count() const;
+
+    //the DFS and BFS
+    void BFS();
 
 };
 //the basic getters of the class
@@ -118,8 +128,8 @@ void Graph<T>::empty()
 template <typename T>
 Graph<T>::Graph()
 {
-    this->vertices = new vector< Vertex<T> >(0);
-    this->edges = new vector< Edge<T> >(0);
+//    this->vertices = new vector< Vertex<T> >(0);
+//    this->edges = new vector< Edge<T> >(0);
     this->vertices_count = 0;
     this->edges_count = 0;
 }
@@ -148,7 +158,7 @@ void Graph<T>::addVertex(Vertex<T> vertex)
     this->vertices_count++;
 }
 template <typename T>
-void Graph<T>::addNeighborVertex(int vertexIndex,const Vertex<T>& vertex)
+void Graph<T>::addNeighborVertex(int vertexIndex,Vertex<T> vertex)
 {
     this->vertices.push_back(vertex);
 
@@ -164,7 +174,7 @@ void Graph<T>::addNeighborVertex(int vertexIndex,const Vertex<T>& vertex)
     this->edges_count++;
 }
 template <typename T>
-void Graph<T>::addEdge(const Vertex<T>& first,const Vertex<T>& second)
+void Graph<T>::addEdge(Vertex<T>& first,Vertex<T>& second)
 {
     Edge<T> edge = Edge<T>(first,second);
 
@@ -246,5 +256,38 @@ bool Graph<T>::areConnected(Vertex<T> first,Vertex<T> second) const
 
     return false;
 }
+//the DFS and BFS
+template <typename T>
+void Graph<T>::BFS()
+{
+    if(this->vertices.size() == 0)
+        return;
+    queue<Vertex<T> > q;
+    this->vertices[0].setMarked();
+    q.push(this->vertices[0]);
 
+    while(q.size() > 0)
+    {
+
+
+        cout<<"In the while"<<endl;
+
+        Vertex<T> front = q.front();
+		cout << front.data << " ";
+        q.pop();
+
+        for(size_t i = 0; i < front.neighbors.size(); i++)
+        {
+            cout<<"In the for"<<endl;
+            if(front.neighbors[i].marked == false)
+            {
+                cout<<"In the if"<<endl;
+                q.push(front.neighbors[i]);
+                front.neighbors[i].setMarked();
+            }
+        }
+        //cout<<q.front().data<<endl;
+        //q.pop();
+    }
+}
 
